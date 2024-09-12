@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resend Verification Email</title>
+    <script src="./assets/scripts/config.js"></script>
+    <script type="module">
+        import { checkNoAuth } from './assets/scripts/auth.js';
+
+        window.onload = checkNoAuth;
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            document.getElementById('message').style.display = 'none';
+            const email = document.getElementById('email').value;
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/auth/resend-verification`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                });
+                const data = await response.json();
+                showMessage(data.message);
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('An error occurred. Please try again.');
+            }
+        }
+
+        function showMessage(message) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = message;
+            messageElement.style.display = 'block';
+        }
+
+        window.handleSubmit = handleSubmit;
+
+    </script>
+</head>
+<body>
+    <h1>Resend Verification Email</h1>
+    <form onsubmit="handleSubmit(event)">
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+        </div>
+        <button type="submit">Resend Verification Email</button>
+    </form>
+    <div id="message" style="display: none;"></div>
+    <button onclick="window.location.href='/login-signup.html'">Back to Login/Signup</button>
+</body>
+</html>

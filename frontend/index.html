@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Demo</title>
+    <script src="./assets/scripts/config.js"></script>
+    <script type="module">
+        import { fetchWithAuth, logout } from './assets/scripts/auth.js';
+
+        async function checkAuth() {
+            const accessToken = localStorage.getItem('accessToken');
+            const refreshToken = localStorage.getItem('refreshToken');
+            const email = localStorage.getItem('email');
+            try {
+                if (accessToken && refreshToken && email) {
+                    const { response, data } = await fetchWithAuth(`${CONFIG.API_BASE_URL}/auth/check-auth`);
+                    if (data?.authenticated) { 
+                        showAppButton();
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking auth:', error);
+            }
+            logout(false);
+            showLoginSignup();
+        }
+
+        function showLoginSignup() {
+            document.getElementById('loginSignup').style.display = 'block';
+            document.getElementById('appButton').style.display = 'none';
+        }
+
+        function showAppButton() {
+            document.getElementById('loginSignup').style.display = 'none';
+            document.getElementById('appButton').style.display = 'block';
+        }
+
+        window.onload = checkAuth;
+    </script>
+</head>
+<body>
+    <h1>Auth Demo</h1>
+    <div id="loginSignup" style="display: none;">
+        <button onclick="window.location.href='/login-signup.html'">Login/Signup</button>
+    </div>
+    <div id="appButton" style="display: none;">
+        <button onclick="window.location.href='/app.html'">Go to App</button>
+    </div>
+</body>
+</html>
